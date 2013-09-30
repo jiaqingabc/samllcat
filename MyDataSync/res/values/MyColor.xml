@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="tab_host">#1874CD</color>
+    <color name="backup_grid">#404040</color>
+    <color name="white">#FFFFFF</color>
+    <color name="text_1">#C1CDCD</color>
+    <color name="backup_grid2">#708090</color>
+</resources>
