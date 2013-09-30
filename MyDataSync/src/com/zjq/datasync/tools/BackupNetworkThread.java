@@ -53,13 +53,13 @@ public class BackupNetworkThread extends Thread {
 
 	Handler mHandler = null;
 	User user = null;
-	PhoneNumber numbers = null;
+	ContactsManager numbers = null;
 	
 	GsonTools myGson = null;
 	MyHttpClient myClient = null;
 	HttpClient client = null;
 
-	public BackupNetworkThread(Handler h, User user, PhoneNumber numbers) {
+	public BackupNetworkThread(Handler h, User user, ContactsManager numbers) {
 		// TODO Auto-generated constructor stub
 		this.mHandler = h;
 		this.user = user;

@@ -3,6 +3,7 @@ package com.zjq.datasync.view;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,8 +17,8 @@ import com.zjq.datasync.model.BackupServerRespond;
 import com.zjq.datasync.model.Contact;
 import com.zjq.datasync.model.User;
 import com.zjq.datasync.tools.BackupNetworkThread;
+import com.zjq.datasync.tools.ContactsManager;
 import com.zjq.datasync.tools.GsonTools;
-import com.zjq.datasync.tools.PhoneNumber;
 import com.zjq.file.FileTools;
 import com.zjq.secret.SecretTools;
 
@@ -27,12 +28,14 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.OperationApplicationException;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.RemoteException;
 import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,15 +57,18 @@ public class DataBackupActivity extends BaseActivity {
 
 	AlertDialog dialog = null;
 	String IMEI = null;
-	PhoneNumber numbers = null;
+	ContactsManager cm = null;
 
 	final String[] itemStrs = { "备份至网络", "备份至本地", "备份至文本", "从网络恢复", "从本地恢复" };
 	final int[] itemIcons = { R.drawable.ic_launcher, R.drawable.ic_launcher,
-			R.drawable.ic_launcher, R.drawable.ic_launcher, R.drawable.ic_launcher};
+			R.drawable.ic_launcher, R.drawable.ic_launcher,
+			R.drawable.ic_launcher };
 
 	final int BACKUP_IN_NETWORK = 0;
 	final int BACKUP_IN_DES_FILE = 1;
 	final int BACKUP_IN_TXT_FILE = 2;
+	final int RESTORE_IN_WEB = 3;
+	final int RESTORE_IN_LOCAL = 4;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +80,7 @@ public class DataBackupActivity extends BaseActivity {
 		TelephonyManager telManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
 		IMEI = telManager.getDeviceId();
 
-		numbers = new PhoneNumber(DataBackupActivity.this);
+		cm = new ContactsManager(DataBackupActivity.this);
 
 		currentUser = getCurrentUser();
 
@@ -97,14 +103,12 @@ public class DataBackupActivity extends BaseActivity {
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
 
-			Toast.makeText(getApplicationContext(), "" + arg2,
-					Toast.LENGTH_SHORT).show();
 			switch (arg2) {
 			case BACKUP_IN_NETWORK:
 				dialog.setMessage("备份准备中.");
 				dialog.show();
 				final BackupNetworkThread thread = new BackupNetworkThread(
-						new MyHandler(dialog), currentUser, numbers);
+						new MyHandler(dialog), currentUser, cm);
 				thread.start();
 				dialog.setCanceledOnTouchOutside(true);
 				dialog.setOnCancelListener(new OnCancelListener() {
@@ -127,10 +131,67 @@ public class DataBackupActivity extends BaseActivity {
 				txtFileTask.execute("");
 				break;
 
+			case RESTORE_IN_WEB:
+				break;
+
+			case RESTORE_IN_LOCAL:
+				localRestore();
+				break;
 			default:
 				break;
 			}
 		}
+	}
+
+	protected int localRestore() {
+		ContactsManager manager = new ContactsManager(this);
+		File restoreFile = new File(Environment.getExternalStorageDirectory()
+				.getPath()
+				+ "/"
+				+ MyConstant.BACKUP_SECRET_FILE_DIR
+				+ MyConstant.BACKUP_SECRET_FILE_NAME);
+		if(!restoreFile.exists() || !restoreFile.isFile()){
+			return -1;
+		}
+		
+		byte[] b = FileTools.readFile(restoreFile);
+		ArrayList<Contact> contacts = null;
+		
+		if(b != null || b.length != 0){
+			b = SecretTools.decrypt(b, IMEI, SecretTools.DES);
+		}
+		
+		if(b != null || b.length != 0){
+			contacts = new GsonTools().getContacts(new String(b));
+		}
+		
+		int restoreSum = 0;
+		
+		if(contacts != null){
+			for(int i = 0;i <contacts.size();i++){
+				Contact contact = contacts.get(i);
+				Contact c = manager.selectContact(contact.getName());
+				//如果设备中已经存在了 这个姓名的联系人 则默认 这个联系人的所有信息都为最新，所以不予恢复
+				if(c != null){
+					continue;
+				}else {
+					try {
+						manager.insertContactTransaction(contact);
+						restoreSum ++;
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						
+					} catch (OperationApplicationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+			}
+		}
+		
+		return restoreSum;
 	}
 
 	class MyHandler extends Handler {
@@ -290,7 +351,7 @@ public class DataBackupActivity extends BaseActivity {
 
 				backupFile.createNewFile();
 
-				contacts = numbers.getContacts();
+				contacts = cm.getContacts();
 				if (contacts != null && contacts.size() > 0) {
 					GsonTools myGson = new GsonTools();
 					String json = myGson.getJsonStr(contacts);
@@ -362,7 +423,7 @@ public class DataBackupActivity extends BaseActivity {
 
 				backupFile.createNewFile();
 
-				contacts = numbers.getContacts();
+				contacts = cm.getContacts();
 
 				if (contacts != null && contacts.size() > 0) {
 					StringBuffer sb = new StringBuffer();
