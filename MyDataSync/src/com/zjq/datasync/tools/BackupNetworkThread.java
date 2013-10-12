@@ -163,7 +163,7 @@ public class BackupNetworkThread extends Thread {
 
 			file.createNewFile();
 			
-			List<Contact> contacts = numbers.getContacts();
+			List<Contact> contacts = numbers.getAllContacts();
 
 			if (contacts != null && contacts.size() > 0) {
 				BackupRequest br = new BackupRequest();

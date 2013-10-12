@@ -18,5 +18,6 @@
     <string name="login_button_text2">连接中</string>
     <string name="login_button_text3">连接失败</string>
     <string name="login_button_text4">连接成功</string>
+    <string name="title_login_btn">登录</string>
 
 </resources>

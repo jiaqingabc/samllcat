@@ -19,6 +19,7 @@ import com.zjq.datasync.base.MyConstant;
 import com.zjq.datasync.model.User;
 import com.zjq.datasync.tools.GsonTools;
 import com.zjq.datasync.tools.MyHttpClient;
+import com.zjq.datasync.tools.UserManager;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -197,6 +198,11 @@ public class LoginActivity extends BaseActivity {
 					
 					Gson gson = new Gson();
 					User loginUser = gson.fromJson(responseStr, User.class);
+					
+					if(loginUser != null){//save user
+						UserManager manager = new UserManager(LoginActivity.this);
+						manager.saveUser(loginUser);
+					}
 
 					startOtherActivityInData(MainActivity.class, loginUser);
 				} else {

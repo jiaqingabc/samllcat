@@ -2,6 +2,9 @@ package com.zjq.datasync.view;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,16 +12,26 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+
 import com.google.gson.Gson;
 import com.zjq.datasync.R;
 import com.zjq.datasync.base.BaseActivity;
 import com.zjq.datasync.base.MyConstant;
 import com.zjq.datasync.model.BackupServerRespond;
 import com.zjq.datasync.model.Contact;
+import com.zjq.datasync.model.RestoreContacts;
 import com.zjq.datasync.model.User;
 import com.zjq.datasync.tools.BackupNetworkThread;
 import com.zjq.datasync.tools.ContactsManager;
 import com.zjq.datasync.tools.GsonTools;
+import com.zjq.datasync.tools.MyHttpClient;
 import com.zjq.file.FileTools;
 import com.zjq.secret.SecretTools;
 
@@ -105,6 +118,10 @@ public class DataBackupActivity extends BaseActivity {
 
 			switch (arg2) {
 			case BACKUP_IN_NETWORK:
+				if(currentUser == null){
+					Toast.makeText(getApplicationContext(), "请先登录.", Toast.LENGTH_SHORT).show();
+					break;
+				}
 				dialog.setMessage("备份准备中.");
 				dialog.show();
 				final BackupNetworkThread thread = new BackupNetworkThread(
@@ -132,6 +149,12 @@ public class DataBackupActivity extends BaseActivity {
 				break;
 
 			case RESTORE_IN_WEB:
+				if(currentUser == null){
+					Toast.makeText(getApplicationContext(), "请先登录.", Toast.LENGTH_SHORT).show();
+					break;
+				}
+				RestoreContactsWeb webTask = new RestoreContactsWeb();
+				webTask.execute(currentUser);
 				break;
 
 			case RESTORE_IN_LOCAL:
@@ -150,47 +173,47 @@ public class DataBackupActivity extends BaseActivity {
 				+ "/"
 				+ MyConstant.BACKUP_SECRET_FILE_DIR
 				+ MyConstant.BACKUP_SECRET_FILE_NAME);
-		if(!restoreFile.exists() || !restoreFile.isFile()){
+		if (!restoreFile.exists() || !restoreFile.isFile()) {
 			return -1;
 		}
-		
+
 		byte[] b = FileTools.readFile(restoreFile);
 		ArrayList<Contact> contacts = null;
-		
-		if(b != null || b.length != 0){
+
+		if (b != null || b.length != 0) {
 			b = SecretTools.decrypt(b, IMEI, SecretTools.DES);
 		}
-		
-		if(b != null || b.length != 0){
+
+		if (b != null || b.length != 0) {
 			contacts = new GsonTools().getContacts(new String(b));
 		}
-		
+
 		int restoreSum = 0;
-		
-		if(contacts != null){
-			for(int i = 0;i <contacts.size();i++){
+
+		if (contacts != null) {
+			for (int i = 0; i < contacts.size(); i++) {
 				Contact contact = contacts.get(i);
 				Contact c = manager.selectContact(contact.getName());
-				//如果设备中已经存在了 这个姓名的联系人 则默认 这个联系人的所有信息都为最新，所以不予恢复
-				if(c != null){
+				// 如果设备中已经存在了 这个姓名的联系人 则默认 这个联系人的所有信息都为最新，所以不予恢复
+				if (c != null) {
 					continue;
-				}else {
+				} else {
 					try {
 						manager.insertContactTransaction(contact);
-						restoreSum ++;
+						restoreSum++;
 					} catch (RemoteException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-						
+
 					} catch (OperationApplicationException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
-				
+
 			}
 		}
-		
+
 		return restoreSum;
 	}
 
@@ -351,7 +374,7 @@ public class DataBackupActivity extends BaseActivity {
 
 				backupFile.createNewFile();
 
-				contacts = cm.getContacts();
+				contacts = cm.getAllContacts();
 				if (contacts != null && contacts.size() > 0) {
 					GsonTools myGson = new GsonTools();
 					String json = myGson.getJsonStr(contacts);
@@ -423,7 +446,7 @@ public class DataBackupActivity extends BaseActivity {
 
 				backupFile.createNewFile();
 
-				contacts = cm.getContacts();
+				contacts = cm.getAllContacts();
 
 				if (contacts != null && contacts.size() > 0) {
 					StringBuffer sb = new StringBuffer();
@@ -455,7 +478,6 @@ public class DataBackupActivity extends BaseActivity {
 
 		@Override
 		protected void onPreExecute() {
-			// TODO Auto-generated method stub
 			dialog.setMessage("正在备份...");
 			dialog.setCancelable(false);
 			dialog.show();
@@ -467,5 +489,125 @@ public class DataBackupActivity extends BaseActivity {
 			// TODO Auto-generated method stub
 			super.onProgressUpdate(values);
 		}
+	}
+
+	class RestoreContactsWeb extends AsyncTask<User, String, RestoreContacts> {
+
+		Gson gson = null;
+
+		public RestoreContactsWeb() {
+			gson = new Gson();
+		}
+
+		@Override
+		protected void onPostExecute(RestoreContacts result) {
+			// TODO Auto-generated method stub
+
+			if (result != null) {
+
+				if (result.getCode() == RestoreContacts.SUCCESS) {
+					dialog.setMessage("数据获取成功,开始恢复数据..");
+					int sum = 0;
+					ArrayList<Contact> list = result.getContacts();
+					ContactsManager manager = new ContactsManager(
+							DataBackupActivity.this);
+					for (int i = 0, j = list.size(); i < j; i++) {
+						try {
+							Contact c1 = list.get(i);
+							Contact c2 = manager.selectContact(c1.getName());
+							
+							if(c2 != null){
+								System.out.println("C2:"+c2.getName());
+							}
+							//排除名字和电话号码相同的联系人
+							if(c2 != null && c2.getNumber().equals(c1.getNumber())){
+								
+							} else {
+								
+								manager.insertContactTransaction(c1);
+								sum++;
+							}
+						} catch (RemoteException e) {
+							e.printStackTrace();
+						} catch (OperationApplicationException e) {
+							e.printStackTrace();
+						}
+					}
+
+					dialog.setMessage("恢复数据 " + sum + " 条。");
+
+				} else {
+					dialog.setMessage("数据获取失败,服务器错误..");
+				}
+			} else {
+				dialog.setMessage("数据获取失败,服务器错误..");
+			}
+			dialog.setCancelable(true);
+			dialog.setCanceledOnTouchOutside(true);
+			super.onPostExecute(result);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			dialog.setMessage("开始连接网络..");
+			dialog.setCancelable(false);
+			dialog.show();
+			super.onPreExecute();
+		}
+
+		@Override
+		protected RestoreContacts doInBackground(User... users) {
+			// TODO Auto-generated method stub
+			RestoreContacts rc = null;
+
+			HttpClient client = new MyHttpClient().getHttpClient();
+			List<BasicNameValuePair> params = new LinkedList<BasicNameValuePair>();
+			params.add(new BasicNameValuePair(MyConstant.RESTORE_CONTACTS_KEY,
+					gson.toJson(users[0])));
+			String param = URLEncodedUtils.format(params, "UTF-8");
+			// baseUrl
+			String baseUrl = MyConstant.RESTORE_CONTACTS_URI;
+			// 将URL与参数拼接
+			HttpGet getMethod = new HttpGet(baseUrl + "?" + param);
+
+			try {
+				HttpResponse response = client.execute(getMethod);
+				if (response.getStatusLine().getStatusCode() == 200) {
+					String json = EntityUtils.toString(response.getEntity());
+					if (json != null) {
+						rc = gson.fromJson(json, RestoreContacts.class);
+					}
+				}
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return rc;
+		}
+
+//		private byte[] getRestoreContact(InputStream is) throws IOException {
+//			int isLen = is.available();
+//			System.out.println("isLen:" + isLen);
+//			ByteBuffer bb = ByteBuffer.allocateDirect(isLen);
+//
+//			int sum = 0;
+//			int len = 0;
+//			byte[] bt = new byte[1024];
+//
+//			while ((len = is.read(bt)) != -1) {
+//				bb.put(bt, 0, len);
+//				sum += len;
+//			}
+//
+//			if (sum != isLen) {
+//				return null;
+//			}
+//
+//			return bb.array();
+//		}
 	}
 }

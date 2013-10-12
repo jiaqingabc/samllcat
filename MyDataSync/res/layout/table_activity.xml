@@ -3,6 +3,25 @@
     android:id="@android:id/tabhost"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
+    
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@android:style/ButtonBar">
+        <TextView
+                android:id="@+id/title_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_centerInParent="true" />
+        <Button 
+            android:id="@+id/title_login_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_login_btn"
+            android:layout_alignParentRight="true"
+            style="@android:style/Widget.Button"/>
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,6 +33,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="10" >
+
         </FrameLayout>
         
         <TabWidget

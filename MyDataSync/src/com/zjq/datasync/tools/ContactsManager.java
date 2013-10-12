@@ -16,6 +16,7 @@ import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
+import android.provider.Contacts.People;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
@@ -36,10 +37,10 @@ public class ContactsManager {
 		this.context = context;
 		this.resolver = this.context.getContentResolver();
 	}
-	
+
 	public Contact selectContact(String selectName) {
 		Contact c = null;
-		
+
 		Cursor cursor = resolver.query(Phone.CONTENT_URI, selectArr,
 				"display_name=?", new String[] { selectName }, null);
 
@@ -59,7 +60,32 @@ public class ContactsManager {
 		return c;
 	}
 
-	public LinkedList<Contact> getContacts() {
+	private LinkedList<Contact> getSimContacts(LinkedList<Contact> l) {
+		LinkedList<Contact> list = new LinkedList<Contact>();
+		if(l != null){
+			list = l;
+		} else {
+			list = new LinkedList<Contact>();
+		}
+		
+		Uri uri = Uri.parse("content://icc/adn");
+		Cursor cursor = resolver.query(uri, null, null,
+				null, null);
+		
+		while (cursor.moveToNext()) {
+	        String name = cursor.getString(cursor.getColumnIndex(People.NAME));
+	        String phoneNumber = cursor.getString(cursor
+	                .getColumnIndex(People.NUMBER));
+	        
+	        Contact c = new Contact();
+			c.setName(name);
+			c.setNumber(phoneNumber);
+			list.add(c);
+	    }
+		return list;
+	}
+	
+	public LinkedList<Contact> getPhoneContacts(){
 		Cursor cursor = resolver.query(Phone.CONTENT_URI, selectArr, null,
 				null, null);
 
@@ -80,8 +106,33 @@ public class ContactsManager {
 			c.setNumber(number);
 			list.add(c);
 		}
-
+		
 		return list;
+	}
+
+	public LinkedList<Contact> getAllContacts() {
+		Cursor cursor = resolver.query(Phone.CONTENT_URI, selectArr, null,
+				null, null);
+
+		LinkedList<Contact> list = new LinkedList<Contact>();
+
+		int count = cursor.getCount();
+
+		// 查询所有的联系人信息
+		while (cursor.moveToNext()) {
+			String name = null;
+			String number = null;
+
+			name = cursor.getString(NAME_INDEX);
+			number = cursor.getString(NUMBER_INDEX);
+
+			Contact c = new Contact();
+			c.setName(name);
+			c.setNumber(number);
+			list.add(c);
+		}
+		
+		return getSimContacts(list);
 	}
 
 	public void insertNumber(Contact c) {
@@ -118,11 +169,12 @@ public class ContactsManager {
 		// values);
 	}
 
-	public void insertContactTransaction(Contact c) throws RemoteException, OperationApplicationException {
+	public void insertContactTransaction(Contact c) throws RemoteException,
+			OperationApplicationException {
 		String name = c.getName();
 
 		String number = c.getNumber();
-		
+
 		ContentResolver cr = context.getContentResolver();
 
 		ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
@@ -147,10 +199,11 @@ public class ContactsManager {
 				.withValue(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE)
 				.withValue(Phone.NUMBER, number)
 				.withValue(Phone.TYPE, Phone.TYPE_MOBILE).build());
-		
-		ContentProviderResult[] results = cr.applyBatch(ContactsContract.AUTHORITY, ops);
-				for(ContentProviderResult result : results){
-					System.out.println(result.uri.toString());
-				}
+
+		ContentProviderResult[] results = cr.applyBatch(
+				ContactsContract.AUTHORITY, ops);
+		for (ContentProviderResult result : results) {
+			System.out.println(result.uri.toString());
+		}
 	}
 }
