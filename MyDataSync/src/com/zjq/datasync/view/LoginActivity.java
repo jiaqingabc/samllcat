@@ -48,10 +48,23 @@ public class LoginActivity extends BaseActivity {
 		setContentView(R.layout.login_layout);
 
 		myGson = new GsonTools();
-		
+
 		res = getResources();
 
 		initView();
+		
+		User oldUser = getCurrentUser();
+		
+		if(oldUser != null){
+			userName.setText(oldUser.getName());
+			userPassword.setText(oldUser.getPassword());
+			startConnectSer();// 修改界面控件
+			LoginTask task = new LoginTask();
+			User user = createLoginUser();
+			if (user != null) {
+				task.execute(user);
+			}
+		}
 	}
 
 	protected void initView() {
@@ -65,40 +78,39 @@ public class LoginActivity extends BaseActivity {
 		registText.setClickable(true);
 		registText.setOnClickListener(new RegistTextOnClickListener());
 	}
-	
-	protected void startConnectSer(){
-		System.out.println("Start");
+
+	protected void startConnectSer() {
 		loginBtn.setText(res.getString(R.string.login_button_text2));
 		loginBtn.setEnabled(false);
-		
+
 		userName.setEnabled(false);
 		userPassword.setEnabled(false);
-		
+
 		registText.setEnabled(false);
 	}
-	
-	protected void connectServerError(){
+
+	protected void connectServerError() {
 		System.out.println("Error");
 		loginBtn.setText(res.getString(R.string.login_button));
 		loginBtn.setEnabled(true);
-		
+
 		userName.setEnabled(true);
 		userPassword.setEnabled(true);
-		
+
 		registText.setEnabled(true);
 	}
 
-	protected void connectServerSuccess(){
+	protected void connectServerSuccess() {
 		System.out.println("Success");
 		loginBtn.setText(res.getString(R.string.login_button_text4));
 		loginBtn.setEnabled(false);
-		
+
 		userName.setEnabled(false);
 		userPassword.setEnabled(false);
-		
+
 		registText.setEnabled(false);
 	}
-	
+
 	protected User createLoginUser() {
 		User user = null;
 
@@ -134,7 +146,7 @@ public class LoginActivity extends BaseActivity {
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
-			startConnectSer();//修改界面控件
+			startConnectSer();// 修改界面控件
 			LoginTask task = new LoginTask();
 			User user = createLoginUser();
 			if (user != null) {
@@ -148,8 +160,8 @@ public class LoginActivity extends BaseActivity {
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
-			
-			startOtherActivity(RegistActivity.class);
+
+			startOtherActivity(RegistActivity.class, true);
 		}
 	}
 
@@ -161,14 +173,14 @@ public class LoginActivity extends BaseActivity {
 		protected void onPostExecute(HttpResponse result) {
 			// TODO Auto-generated method stub
 			boolean connFlag = true;
-			
+
 			try {
 				if (result == null) {
 					AlertDialog dialog = createBasicTextDialog("出错了",
 							"服务器连接失败\n", null, true);
 					dialog.setCanceledOnTouchOutside(true);
 					dialog.show();
-					
+
 					connFlag = false;
 				} else {
 					stateCode = result.getStatusLine().getStatusCode();
@@ -177,34 +189,36 @@ public class LoginActivity extends BaseActivity {
 								"服务器连接失败\n" + stateCode, null, true);
 						dialog.setCanceledOnTouchOutside(true);
 						dialog.show();
-						
+
 						connFlag = false;
 					}
 
 					System.out.println("RESP:" + responseStr);
 					if (responseStr.trim().length() == MyConstant.SERVER_RESPONSE_ERROR) {
-						AlertDialog dialog = createBasicTextDialog("出错了", "登陆失败\n"
-								+ responseStr, null, true);
+						AlertDialog dialog = createBasicTextDialog("出错了",
+								"登陆失败\n" + responseStr, null, true);
 						dialog.setCanceledOnTouchOutside(true);
 						dialog.show();
-						
+
 						connFlag = false;
 					}
 				}
-				
-				if(connFlag){
-					
+
+				if (connFlag) {
+
 					connectServerSuccess();
-					
+
 					Gson gson = new Gson();
 					User loginUser = gson.fromJson(responseStr, User.class);
-					
-					if(loginUser != null){//save user
-						UserManager manager = new UserManager(LoginActivity.this);
+
+					if (loginUser != null) {// save user
+						UserManager manager = new UserManager(
+								LoginActivity.this);
 						manager.saveUser(loginUser);
 					}
 
-					startOtherActivityInData(MainActivity.class, loginUser);
+					startOtherActivityInData(MainActivity.class, loginUser,
+							true);
 				} else {
 					connectServerError();
 				}
@@ -214,15 +228,13 @@ public class LoginActivity extends BaseActivity {
 				e.printStackTrace();
 			}
 
-			
-			
 			super.onPostExecute(result);
 		}
 
 		@Override
 		protected void onPreExecute() {
 			// TODO Auto-generated method stub
-			
+
 			super.onPreExecute();
 		}
 
@@ -239,8 +251,8 @@ public class LoginActivity extends BaseActivity {
 				response = client.doPost(
 						new URI(MyConstant.POST_LOGIN_USER_URI),
 						createLoginUserParams(json));
-				
-				if(response != null){
+
+				if (response != null) {
 					responseStr = EntityUtils.toString(response.getEntity());
 				}
 			} catch (URISyntaxException e) {

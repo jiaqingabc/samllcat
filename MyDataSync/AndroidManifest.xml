@@ -25,7 +25,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.zjq.datasync.view.MainActivity"
+            android:name="com.zjq.datasync.view.HelloActivity"
             android:label="@string/app_name" 
             android:launchMode="singleTask">
             <intent-filter>
@@ -33,6 +33,11 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.zjq.datasync.view.MainActivity"
+            android:label="@string/app_name" 
+            android:launchMode="singleTask">
         </activity>
         
         <activity android:name="com.zjq.datasync.view.RegistActivity"
@@ -45,6 +50,8 @@
             android:launchMode="singleTask">
             
         </activity>
+        
+        <service android:name="com.zjq.datasync.service.BackService"></service>
     </application>
 
 </manifest>

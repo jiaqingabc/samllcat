@@ -53,17 +53,17 @@ public class BackupNetworkThread extends Thread {
 
 	Handler mHandler = null;
 	User user = null;
-	ContactsManager numbers = null;
+	ContactsManager manager = null;
 	
 	GsonTools myGson = null;
 	MyHttpClient myClient = null;
 	HttpClient client = null;
 
-	public BackupNetworkThread(Handler h, User user, ContactsManager numbers) {
+	public BackupNetworkThread(Handler h, User user, ContactsManager manager) {
 		// TODO Auto-generated constructor stub
 		this.mHandler = h;
 		this.user = user;
-		this.numbers = numbers;
+		this.manager = manager;
 	}
 
 	private void sendMsg(int ...code){
@@ -163,7 +163,7 @@ public class BackupNetworkThread extends Thread {
 
 			file.createNewFile();
 			
-			List<Contact> contacts = numbers.getAllContacts();
+			List<Contact> contacts = manager.getAllContacts();
 
 			if (contacts != null && contacts.size() > 0) {
 				BackupRequest br = new BackupRequest();

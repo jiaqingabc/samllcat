@@ -133,7 +133,8 @@ public class RegistActivity extends BaseActivity {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						// TODO Auto-generated method stub
-						startOtherActivityInData(MainActivity.class, registUser);
+						startOtherActivityInData(LoginActivity.class,
+								registUser, true);
 					}
 				});
 		builder.setNegativeButton("ÉÔºóµÇÂ½",
@@ -142,7 +143,7 @@ public class RegistActivity extends BaseActivity {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						// TODO Auto-generated method stub
-						startOtherActivity(LoginActivity.class);
+						startOtherActivity(LoginActivity.class, true);
 					}
 				});
 		dialog = builder.create();
@@ -160,7 +161,7 @@ public class RegistActivity extends BaseActivity {
 			User user = getUser();
 			if (user != null) {
 				RegistTask task = new RegistTask(dialog);
-//				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, user);
+				// task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, user);
 				task.execute(user);
 			}
 		}

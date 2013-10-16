@@ -34,14 +34,16 @@ public class BaseActivity extends Activity {
 		return dialog;
 	}
 	
-	protected void startOtherActivity(Class cls){
+	protected void startOtherActivity(Class cls,boolean finish){
 		Intent intent = new Intent(this, cls);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(intent);
-		finish();
+		if(finish){
+			finish();
+		}
 	}
 	
-	protected void startOtherActivityInData(Class cls, Serializable data){
+	protected void startOtherActivityInData(Class cls, Serializable data,boolean finish){
 		Intent intent = new Intent(this, cls);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		
@@ -51,12 +53,23 @@ public class BaseActivity extends Activity {
 		intent.putExtras(bundle);
 		startActivity(intent);
 		
-		finish();
+		if(finish){
+			finish();
+		}
 	}
 	
 	protected User getCurrentUser(){
 		User user = null;
 		Bundle bundle = getIntent().getExtras();
+		if(bundle != null){
+			user = (User) bundle.getSerializable(MyConstant.ACTIVITY_GET_LOGIN_USER_KEY);
+		}
+		return user;
+	}
+	
+	protected User getCurrentUser(Intent i){
+		User user = null;
+		Bundle bundle = i.getExtras();
 		if(bundle != null){
 			user = (User) bundle.getSerializable(MyConstant.ACTIVITY_GET_LOGIN_USER_KEY);
 		}

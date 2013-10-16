@@ -28,6 +28,8 @@ import com.zjq.datasync.model.BackupServerRespond;
 import com.zjq.datasync.model.Contact;
 import com.zjq.datasync.model.RestoreContacts;
 import com.zjq.datasync.model.User;
+import com.zjq.datasync.service.BackService;
+import com.zjq.datasync.service.BackService.MyBinder;
 import com.zjq.datasync.tools.BackupNetworkThread;
 import com.zjq.datasync.tools.ContactsManager;
 import com.zjq.datasync.tools.GsonTools;
@@ -41,12 +43,16 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.content.OperationApplicationException;
+import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.telephony.TelephonyManager;
@@ -63,8 +69,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class DataBackupActivity extends BaseActivity {
+	
+	BackService backService = null;
+	
+	ServiceConnection connection = null;
 
-	User currentUser = null;
+//	User currentUser = null;
 
 	GridView menuView = null;
 
@@ -94,10 +104,39 @@ public class DataBackupActivity extends BaseActivity {
 		IMEI = telManager.getDeviceId();
 
 		cm = new ContactsManager(DataBackupActivity.this);
-
-		currentUser = getCurrentUser();
+		
+		bindBackService();
 
 		initView();
+	}
+	
+	protected void bindBackService(){
+		connection = new ServiceConnection() {
+			
+			@Override
+			public void onServiceDisconnected(ComponentName name) {
+				// TODO Auto-generated method stub
+			}
+			
+			@Override
+			public void onServiceConnected(ComponentName name, IBinder service) {
+				// TODO Auto-generated method stub
+				backService = ((MyBinder)service).getService();
+				System.out.println("Bind Service is ok");
+			}
+		};
+		
+		Intent backServiceBind = new Intent(DataBackupActivity.this, BackService.class);
+		bindService(backServiceBind, connection, BIND_AUTO_CREATE);
+		
+		System.out.println("Bind Service");
+	}
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		unbindService(connection);
+		super.onDestroy();
 	}
 
 	protected void initView() {
@@ -116,16 +155,17 @@ public class DataBackupActivity extends BaseActivity {
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
 
+			User u = backService.getCurrentUser();
 			switch (arg2) {
 			case BACKUP_IN_NETWORK:
-				if(currentUser == null){
+				if(u == null){
 					Toast.makeText(getApplicationContext(), "请先登录.", Toast.LENGTH_SHORT).show();
 					break;
 				}
 				dialog.setMessage("备份准备中.");
 				dialog.show();
 				final BackupNetworkThread thread = new BackupNetworkThread(
-						new MyHandler(dialog), currentUser, cm);
+						new MyHandler(dialog), u, cm);
 				thread.start();
 				dialog.setCanceledOnTouchOutside(true);
 				dialog.setOnCancelListener(new OnCancelListener() {
@@ -149,12 +189,12 @@ public class DataBackupActivity extends BaseActivity {
 				break;
 
 			case RESTORE_IN_WEB:
-				if(currentUser == null){
+				if(u == null){
 					Toast.makeText(getApplicationContext(), "请先登录.", Toast.LENGTH_SHORT).show();
 					break;
 				}
 				RestoreContactsWeb webTask = new RestoreContactsWeb();
-				webTask.execute(currentUser);
+				webTask.execute(u);
 				break;
 
 			case RESTORE_IN_LOCAL:
