@@ -15,10 +15,10 @@ import org.apache.http.util.EntityUtils;
 
 import com.google.gson.Gson;
 import com.zjq.datasync.base.MyConstant;
+import com.zjq.datasync.core.ContactsManager;
 import com.zjq.datasync.model.Contact;
 import com.zjq.datasync.model.RestoreContacts;
 import com.zjq.datasync.model.User;
-import com.zjq.datasync.tools.ContactsManager;
 import com.zjq.datasync.tools.MyHttpClient;
 
 import android.app.AlertDialog;

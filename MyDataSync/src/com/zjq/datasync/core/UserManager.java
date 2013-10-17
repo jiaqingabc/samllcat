@@ -1,4 +1,4 @@
-package com.zjq.datasync.tools;
+package com.zjq.datasync.core;
 
 import com.zjq.datasync.model.User;
 

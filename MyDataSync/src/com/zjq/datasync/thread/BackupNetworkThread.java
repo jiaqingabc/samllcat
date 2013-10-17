@@ -1,4 +1,4 @@
-package com.zjq.datasync.tools;
+package com.zjq.datasync.thread;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,9 +25,12 @@ import org.apache.http.util.EntityUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.zjq.datasync.base.MyConstant;
+import com.zjq.datasync.core.ContactsManager;
 import com.zjq.datasync.model.BackupRequest;
 import com.zjq.datasync.model.Contact;
 import com.zjq.datasync.model.User;
+import com.zjq.datasync.tools.GsonTools;
+import com.zjq.datasync.tools.MyHttpClient;
 import com.zjq.file.FileTools;
 
 import android.os.Bundle;

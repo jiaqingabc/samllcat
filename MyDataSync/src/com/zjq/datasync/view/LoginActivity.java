@@ -16,10 +16,11 @@ import com.google.gson.Gson;
 import com.zjq.datasync.R;
 import com.zjq.datasync.base.BaseActivity;
 import com.zjq.datasync.base.MyConstant;
+import com.zjq.datasync.core.UserManager;
 import com.zjq.datasync.model.User;
 import com.zjq.datasync.tools.GsonTools;
 import com.zjq.datasync.tools.MyHttpClient;
-import com.zjq.datasync.tools.UserManager;
+import com.zjq.datasync.tools.StateCodeParse;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -198,7 +199,7 @@ public class LoginActivity extends BaseActivity {
 					System.out.println("RESP:" + responseStr);
 					if (responseStr.trim().length() == MyConstant.SERVER_RESPONSE_ERROR) {
 						AlertDialog dialog = createBasicTextDialog("³ö´íÁË",
-								"µÇÂ½Ê§°Ü\n" + responseStr, null, true);
+								StateCodeParse.parse(Integer.parseInt(responseStr.trim())), null, true);
 						dialog.setCanceledOnTouchOutside(true);
 						dialog.show();
 

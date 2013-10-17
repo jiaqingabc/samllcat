@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Locale;
 
 import com.zjq.datasync.base.MyConstant;
+import com.zjq.datasync.core.ContactsManager;
 import com.zjq.datasync.model.Contact;
-import com.zjq.datasync.tools.ContactsManager;
 import com.zjq.file.FileTools;
 
 import android.app.AlertDialog;

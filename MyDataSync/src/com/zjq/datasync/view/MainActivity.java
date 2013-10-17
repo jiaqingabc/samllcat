@@ -7,15 +7,15 @@ import com.google.gson.Gson;
 import com.zjq.datasync.R;
 import com.zjq.datasync.adapter.ContactsListAdapter;
 import com.zjq.datasync.base.BaseActivity;
+import com.zjq.datasync.core.ContactsManager;
+import com.zjq.datasync.core.UserManager;
 import com.zjq.datasync.model.BackupServerRespond;
 import com.zjq.datasync.model.Contact;
 import com.zjq.datasync.model.User;
 import com.zjq.datasync.task.OutputTask;
 import com.zjq.datasync.task.RestoreContactsTask;
 import com.zjq.datasync.task.SyncContactsTask;
-import com.zjq.datasync.tools.BackupNetworkThread;
-import com.zjq.datasync.tools.ContactsManager;
-import com.zjq.datasync.tools.UserManager;
+import com.zjq.datasync.thread.BackupNetworkThread;
 
 import android.net.Uri;
 import android.os.Bundle;

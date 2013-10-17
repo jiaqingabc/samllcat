@@ -1,4 +1,4 @@
-package com.zjq.datasync.tools;
+package com.zjq.datasync.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;

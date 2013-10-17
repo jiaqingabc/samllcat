@@ -19,6 +19,7 @@ import com.zjq.datasync.base.MyConstant;
 import com.zjq.datasync.model.User;
 import com.zjq.datasync.tools.GsonTools;
 import com.zjq.datasync.tools.MyHttpClient;
+import com.zjq.datasync.tools.StateCodeParse;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -191,11 +192,11 @@ public class RegistActivity extends BaseActivity {
 
 			if (statusCode != 200) {
 				dialog.setMessage("连接服务器错误！\n代码：" + statusCode + "服务器返回码："
-						+ responseStr);
+						+ StateCodeParse.parse(Integer.parseInt(responseStr.trim())));
 				dialog.setCancelable(true);
 			} else {
 				if (responseStr.trim().length() == 3) {
-					dialog.setMessage("注册失败！\n" + responseStr);
+					dialog.setMessage("注册失败！\n" + StateCodeParse.parse(Integer.parseInt(responseStr.trim())));
 					dialog.setCancelable(true);
 				} else {
 					Gson gson = new Gson();
