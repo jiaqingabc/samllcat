@@ -83,7 +83,7 @@ public class RestoreContactsTask extends AsyncTask<User, String, RestoreContacts
 	@Override
 	protected void onPreExecute() {
 		// TODO Auto-generated method stub
-		dialog.setMessage("开始连接网络..");
+		dialog.setMessage("开始从网络恢复数据");
 		dialog.setCancelable(false);
 		dialog.show();
 		super.onPreExecute();

@@ -1,9 +1,12 @@
 package com.zjq.datasync.adapter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.zjq.datasync.R;
 import com.zjq.datasync.model.Contact;
+import com.zjq.datasync.tools.PinyinComparator;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +26,19 @@ public class ContactsListAdapter extends BaseAdapter {
 
 	public void setData(ArrayList<Contact> data) {
 		this.data = data;
+	}
+	
+	public void sortPinyin(){
+		Contact[] cs = data.toArray(new Contact[data.size()]);
+		Arrays.sort(cs, new PinyinComparator());
+		data.clear();
+		for(int i = 0,j = cs.length;i<j;i++){
+			data.add(cs[i]);
+		}
+	}
+	
+	public ArrayList<Contact> getData(){
+		return this.data;
 	}
 
 	@Override

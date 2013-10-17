@@ -28,44 +28,56 @@ public final class R {
         public static final int activity_vertical_margin=0x7f050001;
     }
     public static final class drawable {
-        public static final int ic_launcher=0x7f020000;
+        public static final int hello=0x7f020000;
+        public static final int ic_launcher=0x7f020001;
+        public static final int launcher=0x7f020002;
+        public static final int login=0x7f020003;
+        public static final int main_background=0x7f020004;
+        public static final int p=0x7f020005;
+        public static final int regist=0x7f020006;
+        public static final int sms=0x7f020007;
+        public static final int sync_contacts=0x7f020008;
+        public static final int sync_ic=0x7f020009;
     }
     public static final class id {
-        public static final int action_settings=0x7f090024;
-        public static final int backup_btn=0x7f090015;
+        public static final int action_settings=0x7f090027;
+        public static final int backup_btn=0x7f090014;
         public static final int backup_menu=0x7f090003;
-        public static final int contacts_list_view=0x7f090018;
+        public static final int contacts_list_view=0x7f090017;
         public static final int goto_first=0x7f090007;
         public static final int goto_last=0x7f090008;
         public static final int grid_body_image=0x7f090000;
         public static final int grid_body_text=0x7f090001;
         public static final int linearlayout1=0x7f090011;
-        public static final int linearlayout2=0x7f090014;
+        public static final int linearlayout2=0x7f090013;
         public static final int list_contact_name=0x7f090004;
         public static final int list_contact_number=0x7f090005;
         public static final int login_button=0x7f09000c;
         public static final int login_user_name=0x7f09000a;
         public static final int login_user_password=0x7f09000b;
-        public static final int output_btn=0x7f090016;
+        public static final int operate_call_btn=0x7f09001b;
+        public static final int operate_sms_btn=0x7f09001c;
+        public static final int operate_text1=0x7f09001a;
+        public static final int output_btn=0x7f090015;
         public static final int pager=0x7f090006;
-        public static final int regist_button=0x7f090023;
+        public static final int regist_button=0x7f090026;
         public static final int regist_text=0x7f09000d;
-        public static final int regist_user_mail=0x7f090022;
-        public static final int regist_user_name=0x7f09001c;
-        public static final int regist_user_password1=0x7f09001e;
-        public static final int regist_user_password2=0x7f090020;
+        public static final int regist_user_mail=0x7f090025;
+        public static final int regist_user_name=0x7f09001f;
+        public static final int regist_user_password1=0x7f090021;
+        public static final int regist_user_password2=0x7f090023;
         public static final int relativelayout1=0x7f09000e;
-        public static final int restore_btn=0x7f090017;
-        public static final int search_btn=0x7f090013;
+        public static final int restore_btn=0x7f090016;
         public static final int search_edit=0x7f090012;
+        public static final int search_list_view=0x7f090018;
         public static final int sync_contacts_btn=0x7f090019;
-        public static final int tablelayout1=0x7f09001a;
+        public static final int tablelayout1=0x7f09001d;
         public static final int text=0x7f090009;
         public static final int textView1=0x7f090002;
-        public static final int textView2=0x7f09001b;
-        public static final int textView3=0x7f09001d;
-        public static final int textView4=0x7f09001f;
-        public static final int textView5=0x7f090021;
+        public static final int textView2=0x7f09001e;
+        public static final int textView3=0x7f090020;
+        public static final int textView4=0x7f090022;
+        public static final int textView5=0x7f090024;
         public static final int title_login_btn=0x7f090010;
         public static final int title_text=0x7f09000f;
     }
@@ -78,8 +90,9 @@ public final class R {
         public static final int hello_view=0x7f030005;
         public static final int login_layout=0x7f030006;
         public static final int main_layout=0x7f030007;
-        public static final int regist_layout=0x7f030008;
-        public static final int table_activity=0x7f030009;
+        public static final int operate_contact_layout=0x7f030008;
+        public static final int regist_layout=0x7f030009;
+        public static final int table_activity=0x7f03000a;
     }
     public static final class menu {
         public static final int main=0x7f080000;
@@ -87,22 +100,21 @@ public final class R {
     public static final class string {
         public static final int action_settings=0x7f060001;
         public static final int app_name=0x7f060000;
-        public static final int hello_world=0x7f060002;
-        public static final int login_button=0x7f060005;
-        public static final int login_button_text2=0x7f06000e;
-        public static final int login_button_text3=0x7f06000f;
-        public static final int login_button_text4=0x7f060010;
-        public static final int regist_button=0x7f06000b;
-        public static final int regist_text=0x7f06000c;
-        public static final int regist_user_mail=0x7f06000a;
-        public static final int regist_user_name=0x7f060007;
-        public static final int regist_user_password1=0x7f060008;
-        public static final int regist_user_password2=0x7f060009;
-        public static final int table_host_item_backup=0x7f06000d;
-        public static final int title_login_btn=0x7f060011;
-        public static final int user_name=0x7f060003;
-        public static final int user_password=0x7f060004;
-        public static final int wellcome_regist=0x7f060006;
+        public static final int login_button=0x7f060004;
+        public static final int login_button_text2=0x7f06000d;
+        public static final int login_button_text3=0x7f06000e;
+        public static final int login_button_text4=0x7f06000f;
+        public static final int regist_button=0x7f06000a;
+        public static final int regist_text=0x7f06000b;
+        public static final int regist_user_mail=0x7f060009;
+        public static final int regist_user_name=0x7f060006;
+        public static final int regist_user_password1=0x7f060007;
+        public static final int regist_user_password2=0x7f060008;
+        public static final int table_host_item_backup=0x7f06000c;
+        public static final int title_login_btn=0x7f060010;
+        public static final int user_name=0x7f060002;
+        public static final int user_password=0x7f060003;
+        public static final int wellcome_regist=0x7f060005;
     }
     public static final class style {
         /** 

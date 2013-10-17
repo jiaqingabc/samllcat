@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">MyDataSync</string>
+    <string name="app_name">M`电话</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
     <string name="user_name">用户名</string>
     <string name="user_password">密码</string>
     <string name="login_button">登录</string>

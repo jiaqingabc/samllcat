@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@drawable/main_background" >
 
     <RelativeLayout
         android:id="@+id/relativelayout1"
@@ -39,14 +40,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_weight="10"
+            android:hint="查找"
             android:singleLine="true" />
-
-        <Button
-            android:id="@+id/search_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="查找" />
     </LinearLayout>
 
     <LinearLayout
@@ -89,6 +84,15 @@
             android:id="@+id/contacts_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:cacheColorHint="#00000000"
+            android:visibility="gone" >
+        </ListView>
+
+        <ListView
+            android:id="@+id/search_list_view"
+           android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cacheColorHint="#00000000"
             android:visibility="gone" >
         </ListView>
 
@@ -97,8 +101,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:src="@drawable/ic_launcher"
-            />
+            android:background="#00000000"
+            android:src="@drawable/sync_ic" />
     </RelativeLayout>
 
 </RelativeLayout>

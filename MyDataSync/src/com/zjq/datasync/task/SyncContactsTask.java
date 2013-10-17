@@ -67,6 +67,8 @@ public class SyncContactsTask extends AsyncTask<User, String, RestoreContacts> {
 				if(list.size() != 0){
 					adapter.setData(list);
 					
+					adapter.sortPinyin();
+					
 					contactsListView.setAdapter(adapter);
 					
 					syncBtn.setVisibility(View.GONE);
