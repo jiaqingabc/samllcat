@@ -2,8 +2,12 @@ package com.zjq.datasync.view;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.google.gson.Gson;
+import com.newqm.sdkoffer.QuMiConnect;
 import com.zjq.datasync.R;
 import com.zjq.datasync.adapter.ContactsListAdapter;
 import com.zjq.datasync.base.BaseActivity;
@@ -20,8 +24,11 @@ import com.zjq.datasync.thread.BackupNetworkThread;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.text.Editable;
@@ -43,6 +50,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends BaseActivity {
+	
+//	final int AD_CLOSE_TIME = 108000*1000;
+	
+	boolean AD_ACCESS = false;
+	
+	boolean AD_FLAG = false;
 
 	final String TAB_SPEC_BACKUP = "tab.spec.backup";
 
@@ -83,6 +96,8 @@ public class MainActivity extends BaseActivity {
 		cManager = new ContactsManager(MainActivity.this);
 
 		inflater = getLayoutInflater();
+		
+		showQuMiAd();
 
 		initView();
 
@@ -95,6 +110,10 @@ public class MainActivity extends BaseActivity {
 				startOtherActivityInData(LoginActivity.class, u, false);
 			}
 		}
+	}
+	
+	protected void determineDate(){
+		
 	}
 
 	protected void initView() {
@@ -205,6 +224,9 @@ public class MainActivity extends BaseActivity {
 						task = new SyncContactsTask(dialog, cManager,
 								contactsList, syncBtn, adapter);
 						task.execute(currentUser);
+						
+						//AD标志
+						AD_FLAG = true;
 					} catch (Exception e) {
 						dialog.setMessage("本地数据模型错误");
 						dialog.setCancelable(true);
@@ -217,10 +239,21 @@ public class MainActivity extends BaseActivity {
 				}
 			}
 		});
-
-		contactsList.setOnItemClickListener(new ListItemClickListener(contactsList));
 		
-		searchList.setOnItemClickListener(new ListItemClickListener(searchList));
+		dialog.setOnCancelListener(new OnCancelListener() {
+			
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				// TODO Auto-generated method stub
+				showQuMiAd();
+			}
+		});
+
+		contactsList.setOnItemClickListener(new ListItemClickListener(
+				contactsList));
+
+		searchList
+				.setOnItemClickListener(new ListItemClickListener(searchList));
 	}
 
 	protected void getSearchTarget(String s) {
@@ -232,7 +265,8 @@ public class MainActivity extends BaseActivity {
 			contactsList.setVisibility(View.GONE);
 			ArrayList<Contact> data = adapter.getData();
 			for (int i = 0, j = data.size(); i < j; i++) {
-				if (data.get(i).getName().startsWith(s.toUpperCase()) || data.get(i).getName().startsWith(s.toLowerCase())) {
+				if (data.get(i).getName().startsWith(s.toUpperCase())
+						|| data.get(i).getName().startsWith(s.toLowerCase())) {
 					target.add(data.get(i));
 				}
 			}
@@ -240,7 +274,7 @@ public class MainActivity extends BaseActivity {
 			adapter2.setData(target);
 			searchList.setAdapter(adapter2);
 		}
-		
+
 	}
 
 	@Override
@@ -269,17 +303,40 @@ public class MainActivity extends BaseActivity {
 		}
 		super.onNewIntent(intent);
 	}
-	
-	class ListItemClickListener implements OnItemClickListener{
+
+	protected void showQuMiAd() {
+		if(AD_FLAG){
+			QuMiConnect.getQumiConnectInstance(MainActivity.this)
+			.showPopUpAd(MainActivity.this);
+			AD_FLAG = false;
+		}
+		
+//		Random random = new Random();
+//		int i = random.nextInt(25);
+//		Timer timer = new Timer();
+//		timer.schedule(new TimerTask() {
+//
+//			@Override
+//			public void run() {
+//				// TODO Auto-generated method stub
+//				Looper.prepare();
+//				QuMiConnect.getQumiConnectInstance(MainActivity.this)
+//						.showPopUpAd(MainActivity.this);
+//			}
+//		}, (i + 15) * 1000);
+	}
+
+	class ListItemClickListener implements OnItemClickListener {
 		ListView list = null;
-		public ListItemClickListener(ListView list){
+
+		public ListItemClickListener(ListView list) {
 			this.list = list;
 		}
+
 		@Override
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
-			final Contact content = (Contact) list.getAdapter()
-					.getItem(arg2);
+			final Contact content = (Contact) list.getAdapter().getItem(arg2);
 			AlertDialog.Builder builder = new AlertDialog.Builder(
 					MainActivity.this);
 			final LinearLayout view = (LinearLayout) inflater.inflate(
@@ -306,8 +363,8 @@ public class MainActivity extends BaseActivity {
 					String number = content.getNumber();
 					if (number != null && number.length() > 0) {
 						Intent phoneIntent = new Intent(
-								"android.intent.action.CALL", Uri
-										.parse("tel:" + number));
+								"android.intent.action.CALL", Uri.parse("tel:"
+										+ number));
 						startActivity(phoneIntent);
 					}
 				}
@@ -330,7 +387,9 @@ public class MainActivity extends BaseActivity {
 				}
 			});
 
-			builder.show();
+			AlertDialog d = builder.create();
+			d.setCanceledOnTouchOutside(true);
+			d.show();
 		}
 	}
 

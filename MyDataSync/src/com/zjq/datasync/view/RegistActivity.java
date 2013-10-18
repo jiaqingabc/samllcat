@@ -93,13 +93,13 @@ public class RegistActivity extends BaseActivity {
 			check = false;
 		}
 
-		if (check
-				&& (mail == null || mail.trim().length() <= 0
-						|| !mail.endsWith(".com") || !mail.contains("@"))) {
-			check = false;
-			Toast.makeText(getApplicationContext(), "EMAILÌîÐ´ÓÐ´íÎó",
-					Toast.LENGTH_SHORT).show();
-		}
+//		if (check
+//				&& (mail == null || mail.trim().length() <= 0
+//						|| !mail.endsWith(".com") || !mail.contains("@"))) {
+//			check = false;
+//			Toast.makeText(getApplicationContext(), "EMAILÌîÐ´ÓÐ´íÎó",
+//					Toast.LENGTH_SHORT).show();
+//		}
 
 		if (check && (p1 == null || p2 == null || !p1.equals(p2))) {
 			check = false;

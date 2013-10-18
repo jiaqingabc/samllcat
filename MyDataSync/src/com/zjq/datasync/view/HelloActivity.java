@@ -3,6 +3,7 @@ package com.zjq.datasync.view;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.newqm.sdkoffer.QuMiConnect;
 import com.zjq.datasync.R;
 import com.zjq.datasync.base.BaseActivity;
 
@@ -30,7 +31,11 @@ public class HelloActivity extends BaseActivity {
 			}
 		};
 		Timer timer = new Timer();
-		timer.schedule(task, 3000);
+		timer.schedule(task, 5000);
+		
+		QuMiConnect.ConnectQuMi(this, "2b29f72036e96baf", "01b584675b6e2992");
+		QuMiConnect.getQumiConnectInstance(this).initPopAd(this);
+		
 		
 //		receiver = new ServiceStartReceiver();
 //		

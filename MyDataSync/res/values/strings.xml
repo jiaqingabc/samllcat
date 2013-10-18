@@ -6,10 +6,10 @@
     <string name="user_name">用户名</string>
     <string name="user_password">密码</string>
     <string name="login_button">登录</string>
-    <string name="wellcome_regist">欢迎注册</string>
-    <string name="regist_user_name">用户名</string>
-    <string name="regist_user_password1">密码</string>
-    <string name="regist_user_password2">确认</string>
+    <string name="wellcome_regist">注册后就可以在其他设备上获取联系人信息啦</string>
+    <string name="regist_user_name">*用户名</string>
+    <string name="regist_user_password1">*密码</string>
+    <string name="regist_user_password2">*确认</string>
     <string name="regist_user_mail">邮箱</string>
     <string name="regist_button">注册</string>
     <string name="regist_text">点击注册-&gt;&gt;</string>
