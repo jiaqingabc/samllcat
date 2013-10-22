@@ -1,7 +1,11 @@
 package com.zjq.datasync.view;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -51,7 +55,7 @@ import android.widget.Toast;
 
 public class MainActivity extends BaseActivity {
 	
-//	final int AD_CLOSE_TIME = 108000*1000;
+	final int AD_CLOSE_TIME = 108000*1000*2;
 	
 	boolean AD_ACCESS = false;
 	
@@ -96,8 +100,6 @@ public class MainActivity extends BaseActivity {
 		cManager = new ContactsManager(MainActivity.this);
 
 		inflater = getLayoutInflater();
-		
-		showQuMiAd();
 
 		initView();
 
@@ -245,7 +247,11 @@ public class MainActivity extends BaseActivity {
 			@Override
 			public void onCancel(DialogInterface dialog) {
 				// TODO Auto-generated method stub
-				showQuMiAd();
+				try {
+					showQuMiAd();
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 
@@ -303,9 +309,19 @@ public class MainActivity extends BaseActivity {
 		}
 		super.onNewIntent(intent);
 	}
+	
+	protected boolean dateComparator() throws ParseException{
+		boolean flag = false;
+		String dStr = "2013-10-24";
+		Date date = new Date();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+		Date d = format.parse(dStr);
+		flag = d.before(date);
+		return flag;
+	}
 
-	protected void showQuMiAd() {
-		if(AD_FLAG){
+	protected void showQuMiAd() throws ParseException {
+		if(AD_FLAG && dateComparator()){
 			QuMiConnect.getQumiConnectInstance(MainActivity.this)
 			.showPopUpAd(MainActivity.this);
 			AD_FLAG = false;

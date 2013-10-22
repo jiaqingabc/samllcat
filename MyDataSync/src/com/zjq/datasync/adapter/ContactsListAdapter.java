@@ -30,10 +30,12 @@ public class ContactsListAdapter extends BaseAdapter {
 	
 	public void sortPinyin(){
 		Contact[] cs = data.toArray(new Contact[data.size()]);
-		Arrays.sort(cs, new PinyinComparator());
-		data.clear();
-		for(int i = 0,j = cs.length;i<j;i++){
-			data.add(cs[i]);
+		if(cs.length != 0){
+			Arrays.sort(cs, new PinyinComparator());
+			data.clear();
+			for(int i = 0,j = cs.length;i<j;i++){
+				data.add(cs[i]);
+			}
 		}
 	}
 	
